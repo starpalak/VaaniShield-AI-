@@ -1,0 +1,129 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VaaniShield AI</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0b1020;
+      color: #f4f6ff;
+    }
+    header {
+      padding: 22px;
+      text-align: center;
+      background: #151d35;
+      border-bottom: 1px solid #303b5d;
+    }
+    header h1 { margin: 0; color: #8bafff; }
+    header p { color: #c1cbe4; }
+    main {
+      width: 90%;
+      max-width: 650px;
+      margin: 35px auto;
+    }
+    .panel {
+      background: #151d35;
+      padding: 24px;
+      border-radius: 16px;
+      border: 1px solid #303b5d;
+    }
+    textarea {
+      width: 100%;
+      min-height: 130px;
+      padding: 14px;
+      margin: 12px 0;
+      border-radius: 10px;
+      border: 1px solid #526080;
+      background: #0b1020;
+      color: white;
+      font: inherit;
+      resize: vertical;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      background: #769bff;
+      color: #10162a;
+      font-weight: bold;
+      font-size: 16px;
+      border: 0;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    #result {
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 10px;
+      background: #202b48;
+      line-height: 1.6;
+    }
+    .note { color: #b9c5e2; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🛡️ VaaniShield AI</h1>
+    <p>Your voice. Your safety. Your shield.</p>
+  </header>
+
+  <main>
+    <section class="panel">
+      <h2>Safety Text Analyzer</h2>
+      <p>Enter a message to check for potentially harmful language.</p>
+
+      <textarea id="message"
+        placeholder="Paste a message here..."></textarea>
+
+      <button onclick="checkMessage()">Analyze Message</button>
+
+      <div id="result" aria-live="polite">
+        Your analysis will appear here.
+      </div>
+
+      <p class="note">
+        Demo only: this prototype uses basic keyword matching,
+        not a trained AI model. It may miss harmful content
+        or flag harmless text.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    function checkMessage() {
+      const message = document.getElementById("message")
+        .value.trim();
+      const result = document.getElementById("result");
+
+      if (!message) {
+        result.textContent = "Please enter a message first.";
+        return;
+      }
+
+      const terms = [
+        "threat", "kill", "hate", "abuse",
+        "harass", "idiot", "stupid"
+      ];
+
+      const found = terms.filter(term =>
+        new RegExp("\\\\b" + term + "\\\\b", "i").test(message)
+      );
+
+      if (found.length > 0) {
+        result.textContent =
+          "⚠️ Potentially concerning language detected. " +
+          "Please review the message carefully. " +
+          "This is only a basic demo, not a reliable safety verdict.";
+      } else {
+        result.textContent =
+          "No configured keywords detected. This does not " +
+          "guarantee that the message is safe.";
+      }
+    }
+  </script>
+</body>
+</html>
