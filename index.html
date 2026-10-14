@@ -278,13 +278,23 @@ const fraudRules = [
     advice: "Contact your relative directly using a known number and verify the story with another trusted family member before taking action."
   },
   {
+    category: "IDENTITY DETAILS AND PAYMENT SCAM",
+    level: "high",
+    patterns: [
+      /(?=.*\b(kyc|aadhaar|aadhar|adhaar|dl renewal|driving licence|driving license)\b)(?=.*\b(bank account number|account number|aadhaar number|aadhar number|adhaar number)\b)(?=.*\b(transfer|pay|payment|rupees|rs\.?|₹)\b)/i,
+      /(?=.*\b(kyc|aadhaar|aadhar|adhaar|driving licence|driving license)\b)(?=.*\b(bank account|bank details)\b)(?=.*\b(transfer|send money|pay|payment|rupees|rs\.?|₹)\b)/i
+    ],
+    advice: "Be cautious when an unexpected message requests identity documents, banking details, and money together. Do not pay or share sensitive information until you independently verify the request through an official channel."
+  },
+  {
     category: "SUSPICIOUS PAYMENT PRESSURE",
     level: "caution",
     patterns: [
       /\b(urgent|immediately|right now|within 10 minutes|last warning|urgent payment|transfer now)\b.{0,80}\b(pay|transfer|deposit|upi|money|payment|funds)\b/i,
       /\b(pay|transfer|deposit|send|payment)\b.{0,60}\b(or else|otherwise|arrest|account blocked|legal action|confidential)\b/i,
       /\b(refund|prize|reward|lottery|guaranteed returns)\b.{0,80}\b(fee|processing charge|otp|pin|payment|transfer)\b/i,
-      /\b(change bank details|confidential payment)\b/i
+      /\b(change bank details|confidential payment)\b/i,
+      /\b(pay|transfer|send|payment|deposit)\b.{0,60}\b(urgent|immediately|right now|today|within 10 minutes)\b/i
     ],
     advice: "Urgency, threats, and unexpected payment requests are warning signs. Verify the sender and request independently before paying."
   }
