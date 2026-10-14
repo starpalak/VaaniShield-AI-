@@ -236,11 +236,14 @@ const fraudRules = [
     category: "BANKING CREDENTIAL THEFT",
     level: "high",
     patterns: [
-      /\b(share|send|tell|reveal|provide|enter|verify)\b.{0,60}\b(otp|one.time.password|upi pin|atm pin|cvv|bank password)\b/i,
-      /\b(otp|upi pin|atm pin|cvv|bank password)\b.{0,50}\b(share|send|tell|reveal|provide|enter)\b/i,
-      /\b(otp|upi pin|atm pin|cvv)\b.{0,35}\b(needed|required|required now)\b/i,
-      /\b(otp|upi pin|atm pin|cvv)\b.{0,40}\b(batao|bhejo|share karo|de do)\b/i
-    ],
+  /\b(share|send|tell|reveal|provide|enter|verify|give)\b.{0,80}\b(otp|one.time.password|upi pin|atm pin|bank account pin|account pin|pin number|cvv|bank password)\b/i,
+
+  /\b(otp|upi pin|atm pin|bank account pin|account pin|pin number|cvv|bank password)\b.{0,50}\b(share|send|tell|reveal|provide|enter|give)\b/i,
+
+  /\b(bank account pin|account pin|upi pin|atm pin|pin number|bank password)\b/i,
+
+  /\b(otp|cvv)\b.{0,35}\b(share|send|tell|provide|give|bhejo|batao)\b/i
+],
     advice: "Never share an OTP, UPI PIN, ATM PIN, CVV, or banking password with someone contacting you unexpectedly."
   },
   {
