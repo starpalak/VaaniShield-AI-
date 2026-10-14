@@ -252,7 +252,8 @@ const fraudRules = [
     patterns: [
       /\b(kyc|account|sim|bank account)\b.{0,70}\b(blocked|suspended|deactivated| बंद|band ho jayega)\b/i,
       /\b(update|complete|verify)\b.{0,35}\b(kyc)\b.{0,60}\b(link|click|otp|pin)\b/i,
-      /\b(account|sim)\b.{0,35}\b(block|band|suspend)\b.{0,60}\b(otp|link|kyc|verify)\b/i
+      /\b(account|sim)\b.{0,35}\b(block|band|suspend)\b.{0,60}\b(otp|link|kyc|verify)\b/i,
+      /\b(kyc|bank|account)\b.{0,120}\b(click|link|enter|provide|submit)\b.{0,80}\b(details|password|pin|otp|cvv)\b/i
     ],
     advice: "Do not use links or phone numbers in an unexpected message. Contact your bank or service provider through its official app or independently verified contact details."
   },
@@ -300,9 +301,27 @@ document.getElementById("analyze").addEventListener("click", () => {
     return;
   }
 
-  const matches = fraudRules.filter(rule =>
-    rule.patterns.some(pattern => pattern.test(message))
-  );
+  const isProtectiveAdvice =
+  /\b(never|don't|do not|avoid)\b.{0,50}\b(share|send|reveal|tell|give)\b.{0,50}\b(otp|upi pin|atm pin|pin|cvv|password|banking details)\b/i.test(message) &&
+  !/\b(click this link|transfer money|pay now|send money|share your pin|tell me your otp)\b/i.test(message);
+
+if (isProtectiveAdvice) {
+  result.className = "panel result safe";
+  document.getElementById("status").textContent = "SAFETY ADVICE";
+  document.getElementById("heading").textContent =
+    "This message appears to be warning against sharing sensitive information.";
+  document.getElementById("explanation").textContent =
+    "The message uses protective wording. Always consider the full context and verify suspicious requests independently.";
+  document.getElementById("details").textContent =
+    "Never share your OTP, UPI PIN, ATM PIN, CVV, or banking password.";
+  result.style.display = "block";
+  result.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  return;
+}
+
+const matches = fraudRules.filter(rule =>
+  rule.patterns.some(pattern => pattern.test(message))
+);
 
   let level, heading, explanation, details, cssClass;
 
