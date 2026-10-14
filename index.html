@@ -236,24 +236,20 @@ const fraudRules = [
     category: "BANKING CREDENTIAL THEFT",
     level: "high",
     patterns: [
-  /\b(share|send|tell|reveal|provide|enter|verify|give)\b.{0,80}\b(otp|one.time.password|upi pin|atm pin|bank account pin|account pin|pin number|cvv|bank password)\b/i,
-
-  /\b(otp|upi pin|atm pin|bank account pin|account pin|pin number|cvv|bank password)\b.{0,50}\b(share|send|tell|reveal|provide|enter|give)\b/i,
-
-  /\b(bank account pin|account pin|upi pin|atm pin|pin number|bank password)\b/i,
-
-  /\b(otp|cvv)\b.{0,35}\b(share|send|tell|provide|give|bhejo|batao)\b/i
-],
+      /\b(share|send|tell|reveal|provide|enter|give|bhejo|batao)\b.{0,80}\b(otp|one.time.password|upi pin|atm pin|bank account pin|account pin|pin number|cvv|bank password)\b/i,
+      /\b(otp|one.time.password|upi pin|atm pin|cvv|bank password)\b.{0,50}\b(share|send|tell|reveal|provide|enter|give|bhejo|batao)\b/i
+    ],
     advice: "Never share an OTP, UPI PIN, ATM PIN, CVV, or banking password with someone contacting you unexpectedly."
   },
   {
     category: "FAKE KYC OR ACCOUNT BLOCK",
     level: "high",
     patterns: [
-      /\b(kyc|account|sim|bank account)\b.{0,70}\b(blocked|suspended|deactivated| बंद|band ho jayega)\b/i,
-      /\b(update|complete|verify)\b.{0,35}\b(kyc)\b.{0,60}\b(link|click|otp|pin)\b/i,
-      /\b(account|sim)\b.{0,35}\b(block|band|suspend)\b.{0,60}\b(otp|link|kyc|verify)\b/i,
-      /\b(kyc|bank|account)\b.{0,120}\b(click|link|enter|provide|submit)\b.{0,80}\b(details|password|pin|otp|cvv)\b/i
+      /\b(kyc|account|sim|bank account)\b.{0,70}\b(blocked|suspended|deactivated|expired|deactivated|band ho jayega)\b.{0,100}\b(click|link|otp|pin|verify|update|pay|payment)\b/i,
+      /\b(update|complete|verify)\b.{0,35}\bkyc\b.{0,60}\b(link|click|otp|pin|password|details)\b/i,
+      /\b(account|sim)\b.{0,35}\b(block|blocked|band|suspend|suspended)\b.{0,60}\b(otp|link|kyc|verify|pin)\b/i,
+      /\b(kyc|bank|account)\b.{0,120}\b(click|link|enter|provide|submit)\b.{0,80}\b(details|password|pin|otp|cvv)\b/i,
+      /\b(kyc expired|account will be blocked|sim will be blocked)\b.{0,100}\b(urgent|immediately|click|link|otp|verify|update)\b/i
     ],
     advice: "Do not use links or phone numbers in an unexpected message. Contact your bank or service provider through its official app or independently verified contact details."
   },
@@ -262,21 +258,22 @@ const fraudRules = [
     level: "high",
     patterns: [
       /\b(digital arrest|digital custody)\b/i,
-      /\b(police|cbi|ed|narcotics|court officer)\b.{0,100}\b(transfer|deposit|pay|send|money|account)\b/i,
-      /\b(arrest|jail|custody)\b.{0,80}\b(pay|transfer|deposit|money|settlement|release)\b/i,
+      /\b(police|cbi|ed|narcotics|court officer|customs officer)\b.{0,100}\b(transfer|deposit|pay|send|money|account|payment)\b/i,
+      /\b(arrest|jail|custody|warrant)\b.{0,80}\b(pay|transfer|deposit|money|settlement|release)\b/i,
       /\b(police|cbi|officer)\b.{0,80}\b(video call|whatsapp call|stay on the call)\b/i,
-      /\b(fake case|legal case)\b.{0,70}\b(pay|transfer|money|settlement)\b/i
+      /\b(fake case|legal case|police verification)\b.{0,70}\b(pay|transfer|money|settlement|otp)\b/i
     ],
-    advice: "Do not transfer money under intimidation. End the call and independently contact the relevant agency through official channels. A demand for payment to avoid a supposed digital arrest is a major warning sign."
+    advice: "Do not transfer money under intimidation. End the call and independently contact the relevant agency through official channels."
   },
   {
     category: "FAMILY-EMERGENCY IMPERSONATION",
     level: "high",
     patterns: [
-      /\b(your son|your daughter|your brother|your sister|your family member|beta|aapka beta|aapki beti)\b.{0,100}\b(arrested|detained|police|custody|accident|jail)\b/i,
-      /\b(son|daughter|brother|sister|family member|beta|beti)\b.{0,100}\b(money|paise|transfer|upi|bail|jamaanat|release)\b/i,
-      /\b(bail|jamaanat)\b.{0,70}\b(money|paise|transfer|upi|pay|bhejo)\b/i,
-      /\b(paise bhejo|paisa transfer karo)\b.{0,70}\b(police|arrest|jail|beta|beti|bail|jamaanat)\b/i
+      /\b(your son|your daughter|your brother|your sister|your cousin|family member|beta|aapka beta|aapki beti)\b.{0,100}\b(arrested|detained|police|custody|accident|jail|hospital|surgery|emergency)\b.{0,120}\b(money|paise|transfer|upi|bail|release|payment|send|pay)\b/i,
+      /\b(son|daughter|brother|sister|cousin|family member|beta|beti)\b.{0,100}\b(money|paise|transfer|upi|bail|jamaanat|release|urgent payment)\b/i,
+      /\b(bail|jamaanat|release him|release her)\b.{0,70}\b(money|paise|transfer|upi|pay|bhejo)\b/i,
+      /\b(paise bhejo|paisa transfer karo)\b.{0,70}\b(police|arrest|jail|beta|beti|bail|jamaanat)\b/i,
+      /\b(hospital emergency|urgent surgery|serious accident)\b.{0,100}\b(send money|transfer money|urgent payment|bank account|upi)\b/i
     ],
     advice: "Contact your relative directly using a known number and verify the story with another trusted family member before taking action."
   },
@@ -284,11 +281,12 @@ const fraudRules = [
     category: "SUSPICIOUS PAYMENT PRESSURE",
     level: "caution",
     patterns: [
-      /\b(urgent|immediately|right now|within 10 minutes|last warning)\b.{0,80}\b(pay|transfer|deposit|upi|money|payment)\b/i,
-      /\b(pay|transfer|deposit)\b.{0,60}\b(or else|otherwise|arrest|account blocked|legal action)\b/i,
-      /\b(refund|prize|reward|lottery)\b.{0,80}\b(fee|processing charge|otp|pin|payment)\b/i
+      /\b(urgent|immediately|right now|within 10 minutes|last warning|urgent payment|transfer now)\b.{0,80}\b(pay|transfer|deposit|upi|money|payment|funds)\b/i,
+      /\b(pay|transfer|deposit|send|payment)\b.{0,60}\b(or else|otherwise|arrest|account blocked|legal action|confidential)\b/i,
+      /\b(refund|prize|reward|lottery|guaranteed returns)\b.{0,80}\b(fee|processing charge|otp|pin|payment|transfer)\b/i,
+      /\b(change bank details|confidential payment)\b/i
     ],
-    advice: "Urgency and threats are common scam tactics. Verify the sender and request independently before paying."
+    advice: "Urgency, threats, and unexpected payment requests are warning signs. Verify the sender and request independently before paying."
   }
 ];
 
@@ -319,9 +317,15 @@ if (isProtectiveAdvice) {
   return;
 }
 
-const matches = fraudRules.filter(rule =>
-  rule.patterns.some(pattern => pattern.test(message))
-);
+const protectiveAdvice =
+  /\b(never|don't|dont|do not|avoid|warn|warning|remember)\b.{0,70}\b(share|send|reveal|give|provide|tell)\b.{0,40}\b(otp|one.time.password|upi pin|atm pin|password|cvv|bank details|credentials)\b/i.test(message) &&
+  !/\b(please|kindly|must|need you to|send me|tell me|share with me|provide me)\b.{0,50}\b(otp|one.time.password|upi pin|atm pin|password|cvv|bank details|credentials)\b/i.test(message);
+
+const matches = protectiveAdvice
+  ? []
+  : fraudRules.filter(rule =>
+      rule.patterns.some(pattern => pattern.test(message))
+    );
 
   let level, heading, explanation, details, cssClass;
 
