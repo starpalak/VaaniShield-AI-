@@ -1,129 +1,309 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VaaniShield AI</title>
+  <meta name="theme-color" content="#081321">
+  <title>VaaniShield AI | Safer Conversations</title>
   <style>
+    :root {
+      --bg: #081321;
+      --panel: #101f30;
+      --border: #26394d;
+      --text: #edf5ff;
+      --muted: #a1b2c7;
+      --teal: #50e3c2;
+    }
+
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #0b1020;
-      color: #f4f6ff;
-    }
-    header {
-      padding: 22px;
-      text-align: center;
-      background: #151d35;
-      border-bottom: 1px solid #303b5d;
-    }
-    header h1 { margin: 0; color: #8bafff; }
-    header p { color: #c1cbe4; }
-    main {
-      width: 90%;
-      max-width: 650px;
-      margin: 35px auto;
-    }
-    .panel {
-      background: #151d35;
-      padding: 24px;
-      border-radius: 16px;
-      border: 1px solid #303b5d;
-    }
-    textarea {
-      width: 100%;
-      min-height: 130px;
-      padding: 14px;
-      margin: 12px 0;
-      border-radius: 10px;
-      border: 1px solid #526080;
-      background: #0b1020;
-      color: white;
-      font: inherit;
-      resize: vertical;
-    }
-    button {
-      width: 100%;
-      padding: 14px;
-      background: #769bff;
-      color: #10162a;
-      font-weight: bold;
-      font-size: 16px;
-      border: 0;
-      border-radius: 10px;
-      cursor: pointer;
-    }
-    #result {
-      margin-top: 18px;
-      padding: 14px;
-      border-radius: 10px;
-      background: #202b48;
+      background: var(--bg);
+      color: var(--text);
       line-height: 1.6;
     }
-    .note { color: #b9c5e2; font-size: 13px; }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 20px 7%;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand { font-size: 21px; font-weight: bold; }
+    .brand span { color: var(--teal); }
+    .tag {
+      color: var(--teal);
+      border: 1px solid #285d59;
+      border-radius: 20px;
+      padding: 5px 10px;
+      font-size: 12px;
+    }
+
+    main {
+      max-width: 850px;
+      margin: auto;
+      padding: 55px 20px;
+    }
+
+    .hero { text-align: center; margin-bottom: 35px; }
+
+    .eyebrow {
+      color: var(--teal);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    h1 {
+      font-size: clamp(34px, 6vw, 53px);
+      line-height: 1.15;
+      margin: 14px 0;
+    }
+
+    h1 span { color: var(--teal); }
+
+    .subtitle {
+      max-width: 570px;
+      margin: auto;
+      color: var(--muted);
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 25px;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 9px;
+    }
+
+    select, textarea {
+      width: 100%;
+      color: var(--text);
+      background: #091725;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px;
+      font: inherit;
+      margin-bottom: 18px;
+    }
+
+    textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+
+    select:focus, textarea:focus {
+      outline: 2px solid var(--teal);
+      outline-offset: 2px;
+    }
+
+    .hint { color: var(--muted); font-size: 12px; margin-top: -10px; }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .primary {
+      width: 100%;
+      color: #071b1a;
+      background: var(--teal);
+    }
+
+    button:hover { filter: brightness(1.08); }
+
+    .result { display: none; }
+    .result h2 { margin-top: 0; font-size: 21px; }
+    .result p { color: var(--muted); }
+    .result.safe { border-color: #25856e; }
+    .result.caution { border-color: #b58b3d; }
+    .result.high { border-color: #c65d68; }
+
+    .status {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 20px;
+      background: #26394d;
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    footer {
+      text-align: center;
+      border-top: 1px solid var(--border);
+      padding: 25px 15px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    @media (max-width: 520px) {
+      header { padding: 16px; }
+      main { padding: 35px 15px; }
+      .panel { padding: 18px; }
+      .brand { font-size: 18px; }
+    }
   </style>
 </head>
+
 <body>
   <header>
-    <h1>🛡️ VaaniShield AI</h1>
-    <p>Your voice. Your safety. Your shield.</p>
+    <div class="brand">🛡️ Vaani<span>Shield</span> AI</div>
+    <div class="tag">EARLY PROTOTYPE</div>
   </header>
 
   <main>
-    <section class="panel">
-      <h2>Safety Text Analyzer</h2>
-      <p>Enter a message to check for potentially harmful language.</p>
-
-      <textarea id="message"
-        placeholder="Paste a message here..."></textarea>
-
-      <button onclick="checkMessage()">Analyze Message</button>
-
-      <div id="result" aria-live="polite">
-        Your analysis will appear here.
-      </div>
-
-      <p class="note">
-        Demo only: this prototype uses basic keyword matching,
-        not a trained AI model. It may miss harmful content
-        or flag harmless text.
+    <section class="hero">
+      <div class="eyebrow">Technology with empathy</div>
+      <h1>Make every conversation <span>safer.</span></h1>
+      <p class="subtitle">
+        An early-stage tool exploring how technology can help
+        identify potentially harmful language in digital conversations.
       </p>
     </section>
+
+    <section class="panel">
+      <label for="language">Choose message language</label>
+      <select id="language">
+        <option value="auto">English / Hindi / Hinglish</option>
+        <option value="english">English</option>
+        <option value="hindi">Hindi</option>
+        <option value="hinglish">Hinglish</option>
+      </select>
+
+      <label for="message">Your message</label>
+      <textarea id="message"
+        placeholder="Paste a message here to check its language patterns..."
+        maxlength="5000"></textarea>
+
+      <p class="hint">Maximum 5,000 characters. Avoid sharing personal information.</p>
+
+      <button class="primary" id="analyze">
+        Analyze Message →
+      </button>
+    </section>
+
+    <section class="panel result" id="result" aria-live="polite">
+      <div class="status" id="status"></div>
+      <h2 id="heading"></h2>
+      <p id="explanation"></p>
+      <p id="details"></p>
+      <p class="note">
+        This is a rule-based demonstration, not a validated AI judgment.
+        It can miss harmful messages or flag harmless ones.
+      </p>
+    </section>
+
+    <p class="note">
+      Your message is analyzed locally in this demo and is not sent
+      to a server by this page.
+    </p>
   </main>
 
+  <footer>
+    VaaniShield AI · A student innovation prototype · Built with purpose
+  </footer>
+
   <script>
-    function checkMessage() {
-      const message = document.getElementById("message")
-        .value.trim();
-      const result = document.getElementById("result");
+    const messageInput = document.getElementById("message");
+    const result = document.getElementById("result");
+
+    // Illustrative patterns for the first prototype.
+    // These rules are not a complete or validated safety model.
+    const threatPatterns = [
+      /\bi will (hurt|harm|attack) you\b/i,
+      /\bi am going to (hurt|harm|attack) you\b/i,
+      /\bkill you\b/i,
+      /\bjaan se maar\b/i,
+      /\bmaar dunga\b/i,
+      /\bmaar dungi\b/i,
+      /\btujhe dekh lunga\b/i
+    ];
+
+    const insultPatterns = [
+      /\bidiot\b/i,
+      /\bstupid\b/i,
+      /\bshut up\b/i,
+      /\bbewakoof\b/i,
+      /\bpagal\b/i,
+      /\bkamina\b/i,
+      /\bchup kar\b/i
+    ];
+
+    document.getElementById("analyze").addEventListener("click", () => {
+      const message = messageInput.value.trim();
 
       if (!message) {
-        result.textContent = "Please enter a message first.";
+        messageInput.focus();
+        alert("Please enter a message first.");
         return;
       }
 
-      const terms = [
-        "threat", "kill", "hate", "abuse",
-        "harass", "idiot", "stupid"
-      ];
-
-      const found = terms.filter(term =>
-        new RegExp("\\\\b" + term + "\\\\b", "i").test(message)
+      const threatMatches = threatPatterns.filter(
+        pattern => pattern.test(message)
       );
 
-      if (found.length > 0) {
-        result.textContent =
-          "⚠️ Potentially concerning language detected. " +
-          "Please review the message carefully. " +
-          "This is only a basic demo, not a reliable safety verdict.";
+      const insultMatches = insultPatterns.filter(
+        pattern => pattern.test(message)
+      );
+
+      let level, heading, explanation, details, cssClass;
+
+      if (threatMatches.length > 0) {
+        level = "POTENTIAL THREAT";
+        heading = "A potentially threatening phrase was detected.";
+        explanation =
+          "Some wording matches a rule associated with threatening language. Context matters, so this is not a definitive judgment.";
+        details = "Matched patterns: " + threatMatches.length;
+        cssClass = "high";
+      } else if (insultMatches.length > 0) {
+        level = "POSSIBLE ABUSIVE LANGUAGE";
+        heading = "A potentially insulting phrase was detected.";
+        explanation =
+          "Some wording may be insulting or hostile, depending on context and how it is used.";
+        details = "Matched patterns: " + insultMatches.length;
+        cssClass = "caution";
       } else {
-        result.textContent =
-          "No configured keywords detected. This does not " +
-          "guarantee that the message is safe.";
+        level = "NO MATCH FOUND";
+        heading = "No listed patterns were detected.";
+        explanation =
+          "This does not prove that the message is safe. The current prototype checks only a small set of phrases.";
+        details = "The message may need a more capable contextual analysis.";
+        cssClass = "safe";
       }
-    }
+
+      result.className = "panel result " + cssClass;
+      document.getElementById("status").textContent = level;
+      document.getElementById("heading").textContent = heading;
+      document.getElementById("explanation").textContent = explanation;
+      document.getElementById("details").textContent = details;
+      result.style.display = "block";
+
+      result.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
   </script>
 </body>
 </html>
