@@ -228,82 +228,119 @@
   </footer>
 
   <script>
-    const messageInput = document.getElementById("message");
-    const result = document.getElementById("result");
+const messageInput = document.getElementById("message");
+const result = document.getElementById("result");
 
-    // Illustrative patterns for the first prototype.
-    // These rules are not a complete or validated safety model.
-    const threatPatterns = [
-      /\bi will (hurt|harm|attack) you\b/i,
-      /\bi am going to (hurt|harm|attack) you\b/i,
-      /\bkill you\b/i,
-      /\bjaan se maar\b/i,
-      /\bmaar dunga\b/i,
-      /\bmaar dungi\b/i,
-      /\btujhe dekh lunga\b/i
-    ];
+const fraudRules = [
+  {
+    category: "BANKING CREDENTIAL THEFT",
+    level: "high",
+    patterns: [
+      /\b(share|send|tell|reveal|provide|enter|verify)\b.{0,60}\b(otp|one.time.password|upi pin|atm pin|cvv|bank password)\b/i,
+      /\b(otp|upi pin|atm pin|cvv|bank password)\b.{0,50}\b(share|send|tell|reveal|provide|enter)\b/i,
+      /\b(otp|upi pin|atm pin|cvv)\b.{0,35}\b(needed|required|required now)\b/i,
+      /\b(otp|upi pin|atm pin|cvv)\b.{0,40}\b(batao|bhejo|share karo|de do)\b/i
+    ],
+    advice: "Never share an OTP, UPI PIN, ATM PIN, CVV, or banking password with someone contacting you unexpectedly."
+  },
+  {
+    category: "FAKE KYC OR ACCOUNT BLOCK",
+    level: "high",
+    patterns: [
+      /\b(kyc|account|sim|bank account)\b.{0,70}\b(blocked|suspended|deactivated| बंद|band ho jayega)\b/i,
+      /\b(update|complete|verify)\b.{0,35}\b(kyc)\b.{0,60}\b(link|click|otp|pin)\b/i,
+      /\b(account|sim)\b.{0,35}\b(block|band|suspend)\b.{0,60}\b(otp|link|kyc|verify)\b/i
+    ],
+    advice: "Do not use links or phone numbers in an unexpected message. Contact your bank or service provider through its official app or independently verified contact details."
+  },
+  {
+    category: "POSSIBLE DIGITAL-ARREST SCAM",
+    level: "high",
+    patterns: [
+      /\b(digital arrest|digital custody)\b/i,
+      /\b(police|cbi|ed|narcotics|court officer)\b.{0,100}\b(transfer|deposit|pay|send|money|account)\b/i,
+      /\b(arrest|jail|custody)\b.{0,80}\b(pay|transfer|deposit|money|settlement|release)\b/i,
+      /\b(police|cbi|officer)\b.{0,80}\b(video call|whatsapp call|stay on the call)\b/i,
+      /\b(fake case|legal case)\b.{0,70}\b(pay|transfer|money|settlement)\b/i
+    ],
+    advice: "Do not transfer money under intimidation. End the call and independently contact the relevant agency through official channels. A demand for payment to avoid a supposed digital arrest is a major warning sign."
+  },
+  {
+    category: "FAMILY-EMERGENCY IMPERSONATION",
+    level: "high",
+    patterns: [
+      /\b(your son|your daughter|your brother|your sister|your family member|beta|aapka beta|aapki beti)\b.{0,100}\b(arrested|detained|police|custody|accident|jail)\b/i,
+      /\b(son|daughter|brother|sister|family member|beta|beti)\b.{0,100}\b(money|paise|transfer|upi|bail|jamaanat|release)\b/i,
+      /\b(bail|jamaanat)\b.{0,70}\b(money|paise|transfer|upi|pay|bhejo)\b/i,
+      /\b(paise bhejo|paisa transfer karo)\b.{0,70}\b(police|arrest|jail|beta|beti|bail|jamaanat)\b/i
+    ],
+    advice: "Contact your relative directly using a known number and verify the story with another trusted family member before taking action."
+  },
+  {
+    category: "SUSPICIOUS PAYMENT PRESSURE",
+    level: "caution",
+    patterns: [
+      /\b(urgent|immediately|right now|within 10 minutes|last warning)\b.{0,80}\b(pay|transfer|deposit|upi|money|payment)\b/i,
+      /\b(pay|transfer|deposit)\b.{0,60}\b(or else|otherwise|arrest|account blocked|legal action)\b/i,
+      /\b(refund|prize|reward|lottery)\b.{0,80}\b(fee|processing charge|otp|pin|payment)\b/i
+    ],
+    advice: "Urgency and threats are common scam tactics. Verify the sender and request independently before paying."
+  }
+];
 
-    const insultPatterns = [
-      /\bidiot\b/i,
-      /\bstupid\b/i,
-      /\bshut up\b/i,
-      /\bbewakoof\b/i,
-      /\bpagal\b/i,
-      /\bkamina\b/i,
-      /\bchup kar\b/i
-    ];
+document.getElementById("analyze").addEventListener("click", () => {
+  const message = messageInput.value.trim();
 
-    document.getElementById("analyze").addEventListener("click", () => {
-      const message = messageInput.value.trim();
+  if (!message) {
+    messageInput.focus();
+    alert("Please enter a message first.");
+    return;
+  }
 
-      if (!message) {
-        messageInput.focus();
-        alert("Please enter a message first.");
-        return;
-      }
+  const matches = fraudRules.filter(rule =>
+    rule.patterns.some(pattern => pattern.test(message))
+  );
 
-      const threatMatches = threatPatterns.filter(
-        pattern => pattern.test(message)
-      );
+  let level, heading, explanation, details, cssClass;
 
-      const insultMatches = insultPatterns.filter(
-        pattern => pattern.test(message)
-      );
+  if (matches.some(rule => rule.level === "high")) {
+    level = "HIGH-RISK WARNING";
+    heading = "This message contains potential fraud indicators.";
+    explanation =
+      "Do not share credentials, transfer money, or follow instructions until you have independently verified the request.";
+    details = matches.map(rule =>
+      rule.category + ": " + rule.advice
+    ).join(" ");
+    cssClass = "high";
+  } else if (matches.length > 0) {
+    level = "CAUTION";
+    heading = "This message contains suspicious patterns.";
+    explanation =
+      "Review the request carefully and verify it independently before taking action.";
+    details = matches.map(rule =>
+      rule.category + ": " + rule.advice
+    ).join(" ");
+    cssClass = "caution";
+  } else {
+    level = "NO KNOWN PATTERN MATCHED";
+    heading = "No listed fraud pattern was detected.";
+    explanation =
+      "This does not establish that the message is genuine. New scams, coded language, and contextual fraud may not match these rules.";
+    details =
+      "If the sender requests money or sensitive information, verify through an independent, trusted channel.";
+    cssClass = "safe";
+  }
 
-      let level, heading, explanation, details, cssClass;
-
-      if (threatMatches.length > 0) {
-        level = "POTENTIAL THREAT";
-        heading = "A potentially threatening phrase was detected.";
-        explanation =
-          "Some wording matches a rule associated with threatening language. Context matters, so this is not a definitive judgment.";
-        details = "Matched patterns: " + threatMatches.length;
-        cssClass = "high";
-      } else if (insultMatches.length > 0) {
-        level = "POSSIBLE ABUSIVE LANGUAGE";
-        heading = "A potentially insulting phrase was detected.";
-        explanation =
-          "Some wording may be insulting or hostile, depending on context and how it is used.";
-        details = "Matched patterns: " + insultMatches.length;
-        cssClass = "caution";
-      } else {
-        level = "NO MATCH FOUND";
-        heading = "No listed patterns were detected.";
-        explanation =
-          "This does not prove that the message is safe. The current prototype checks only a small set of phrases.";
-        details = "The message may need a more capable contextual analysis.";
-        cssClass = "safe";
-      }
-
-      result.className = "panel result " + cssClass;
-      document.getElementById("status").textContent = level;
-      document.getElementById("heading").textContent = heading;
-      document.getElementById("explanation").textContent = explanation;
-      document.getElementById("details").textContent = details;
-      result.style.display = "block";
-
-      result.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    });
-  </script>
+  result.className = "panel result " + cssClass;
+  document.getElementById("status").textContent = level;
+  document.getElementById("heading").textContent = heading;
+  document.getElementById("explanation").textContent = explanation;
+  document.getElementById("details").textContent = details;
+  result.style.display = "block";
+  result.scrollIntoView({ behavior: "smooth", block: "nearest" });
+});
+</script>
+    
+  
 </body>
 </html>
